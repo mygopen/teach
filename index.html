@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyGoPen 查核文章產生器</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* 自訂捲軸樣式 */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-800 font-sans">
+
+  <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+    <div class="flex items-center gap-3">
+      <div class="bg-green-800 text-white font-bold p-1 rounded">M</div>
+      <h1 class="text-xl font-bold text-green-800">MyGoPen 查核文章產生器</h1>
+    </div>
+    <div class="text-sm font-semibold tracking-wider text-gray-400">BLOGGER EDITION 2026</div>
+  </header>
+
+  <main class="max-w-[1400px] mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-80px)]">
+    
+    <aside class="col-span-1 lg:col-span-4 flex flex-col gap-6">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-bold flex items-center gap-2 mb-6 text-gray-800">
+          <svg class="w-5 h-5 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          輸入工具資訊
+        </h2>
+        
+        <form id="generatorForm" class="space-y-5">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">工具名稱</label>
+            <input type="text" id="toolName" required placeholder="例如：MapChecking" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">工具網址</label>
+            <div class="relative">
+              <input type="url" id="toolUrl" required placeholder="https://..." class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-4 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all">
+              <svg class="w-4 h-4 absolute right-3 top-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">查證案例</label>
+            <textarea id="useCase" required rows="5" placeholder="請描述查證的具體情境或案例..." class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all resize-none"></textarea>
+          </div>
+
+          <div class="flex gap-3 pt-2">
+            <button type="submit" id="submitBtn" class="flex-1 bg-[#1a5d33] hover:bg-[#134425] text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors">
+              <svg id="btnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+              <span id="btnText">生成文章</span>
+            </button>
+            <button type="button" onclick="document.getElementById('generatorForm').reset()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 p-3 rounded-lg transition-colors border border-gray-200">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-green-50 border border-green-200 rounded-xl p-5 shadow-sm">
+        <h3 class="font-bold text-green-800 mb-3 text-sm">使用提示</h3>
+        <ul class="text-sm text-green-700 space-y-2 leading-relaxed">
+          <li>• 提供詳細的查證案例能讓生成內容更精準。</li>
+          <li>• 生成的 HTML 包含 Blogger 專用的 separator 結構。</li>
+          <li>• 圖片位置標記為 [首圖]、[工具截圖] 等，請手動替換。</li>
+        </ul>
+      </div>
+    </aside>
+
+    <section class="col-span-1 lg:col-span-8 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
+      <div class="flex border-b border-gray-200 bg-gray-50">
+        <button id="tab-code" class="px-6 py-3.5 text-sm font-bold text-green-700 border-b-2 border-green-700 flex items-center gap-2 bg-white" onclick="switchTab('code')">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+          HTML 程式碼
+        </button>
+        <button id="tab-preview" class="px-6 py-3.5 text-sm font-semibold text-gray-500 hover:text-gray-700 flex items-center gap-2 transition-colors" onclick="switchTab('preview')">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+          預覽
+        </button>
+      </div>
+
+      <div class="flex-1 p-6 relative overflow-y-auto bg-white">
+        <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+          <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+             <svg class="w-8 h-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+          </div>
+          <p class="text-sm">填寫左側資訊並點擊「生成文章」</p>
+        </div>
+
+        <pre id="view-code" class="hidden text-sm text-gray-800 whitespace-pre-wrap font-mono"></pre>
+        
+        <div id="view-preview" class="hidden prose prose-sm max-w-none prose-green"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let generatedHtml = "";
+
+    function switchTab(tab) {
+      document.getElementById('tab-code').className = tab === 'code' 
+        ? 'px-6 py-3.5 text-sm font-bold text-green-700 border-b-2 border-green-700 flex items-center gap-2 bg-white' 
+        : 'px-6 py-3.5 text-sm font-semibold text-gray-500 hover:text-gray-700 flex items-center gap-2 transition-colors';
+      
+      document.getElementById('tab-preview').className = tab === 'preview' 
+        ? 'px-6 py-3.5 text-sm font-bold text-green-700 border-b-2 border-green-700 flex items-center gap-2 bg-white' 
+        : 'px-6 py-3.5 text-sm font-semibold text-gray-500 hover:text-gray-700 flex items-center gap-2 transition-colors';
+
+      document.getElementById('view-code').style.display = tab === 'code' && generatedHtml ? 'block' : 'none';
+      document.getElementById('view-preview').style.display = tab === 'preview' && generatedHtml ? 'block' : 'none';
+      
+      if(generatedHtml) document.getElementById('emptyState').style.display = 'none';
+    }
+
+    document.getElementById('generatorForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const toolName = document.getElementById('toolName').value;
+      const toolUrl = document.getElementById('toolUrl').value;
+      const useCase = document.getElementById('useCase').value;
+      
+      const btn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const btnIcon = document.getElementById('btnIcon');
+
+      // 載入狀態
+      btn.disabled = true;
+      btn.classList.add('opacity-75', 'cursor-not-allowed');
+      btnText.innerText = "生成中...";
+      btnIcon.outerHTML = `<svg id="btnIcon" class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+      try {
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ toolName, toolUrl, useCase })
+        });
+
+        if (!response.ok) throw new Error('API 請求失敗');
+        
+        const data = await response.json();
+        
+        // 移除可能出現的 markdown html 標記
+        generatedHtml = data.result.replace(/^```html\n?|```$/gm, '').trim();
+
+        // 更新 UI
+        document.getElementById('emptyState').style.display = 'none';
+        document.getElementById('view-code').textContent = generatedHtml;
+        document.getElementById('view-preview').innerHTML = generatedHtml;
+        
+        switchTab('code'); // 預設切換回程式碼視圖
+
+      } catch (error) {
+        alert("生成失敗，請稍後再試。錯誤資訊：" + error.message);
+      } finally {
+        // 恢復按鈕狀態
+        btn.disabled = false;
+        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        btnText.innerText = "生成文章";
+        document.getElementById('btnIcon').outerHTML = `<svg id="btnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>`;
+      }
+    });
+  </script>
+</body>
+</html>
