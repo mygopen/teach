@@ -142,9 +142,14 @@
           body: JSON.stringify({ toolName, toolUrl, useCase })
         });
 
-        if (!response.ok) throw new Error('API 請求失敗');
-        
+        // 先解析後端回傳的資料
         const data = await response.json();
+        
+        // 如果 HTTP 狀態碼不是 200 (例如 404找不到、500內部錯誤)
+        if (!response.ok) {
+          // 丟出後端實際寫的錯誤訊息 (例如 Gemini 金鑰錯誤等)
+          throw new Error(data.error || `HTTP 錯誤碼: ${response.status}`);
+        }
         
         // 移除可能出現的 markdown html 標記
         generatedHtml = data.result.replace(/^```html\n?|```$/gm, '').trim();
