@@ -142,12 +142,19 @@
           body: JSON.stringify({ toolName, toolUrl, useCase })
         });
 
-        // 先解析後端回傳的資料
-        const data = await response.json();
+        // 不要直接轉 JSON，先拿純文字來看伺服器到底傳了什麼
+        const responseText = await response.text();
         
-        // 如果 HTTP 狀態碼不是 200 (例如 404找不到、500內部錯誤)
+        let data;
+        try {
+          data = JSON.parse(responseText); // 嘗試解析 JSON
+        } catch (parseError) {
+          // 如果解析失敗，代表伺服器回傳的根本不是 JSON (可能是 Cloudflare 的 HTML 錯誤頁面)
+          console.error("伺服器原始回傳內容:", responseText);
+          throw new Error(`伺服器發生異常 (狀態碼 ${response.status})。回傳了非預期的內容，請按 F12 打開 Console 查看詳細原始碼。`);
+        }
+        
         if (!response.ok) {
-          // 丟出後端實際寫的錯誤訊息 (例如 Gemini 金鑰錯誤等)
           throw new Error(data.error || `HTTP 錯誤碼: ${response.status}`);
         }
         
