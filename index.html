@@ -92,14 +92,21 @@
     </aside>
 
     <section class="col-span-1 lg:col-span-8 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
-      <div class="flex border-b border-gray-200 bg-gray-50">
-        <button id="tab-code" class="px-6 py-3.5 text-sm font-bold text-green-700 border-b-2 border-green-700 flex items-center gap-2 bg-white" onclick="switchTab('code')">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-          HTML 程式碼
-        </button>
-        <button id="tab-preview" class="px-6 py-3.5 text-sm font-semibold text-gray-500 hover:text-gray-700 flex items-center gap-2 transition-colors" onclick="switchTab('preview')">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-          預覽
+      <div class="flex justify-between items-center border-b border-gray-200 bg-gray-50 pr-4">
+        <div class="flex">
+          <button id="tab-code" class="px-6 py-3.5 text-sm font-bold text-green-700 border-b-2 border-green-700 flex items-center gap-2 bg-white" onclick="switchTab('code')">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+            HTML 程式碼
+          </button>
+          <button id="tab-preview" class="px-6 py-3.5 text-sm font-semibold text-gray-500 hover:text-gray-700 flex items-center gap-2 transition-colors" onclick="switchTab('preview')">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+            預覽
+          </button>
+        </div>
+        
+        <button id="copyBtn" onclick="copyCode()" class="hidden items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-green-700 hover:bg-green-50 rounded-md transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+          <span id="copyBtnText">複製 HTML</span>
         </button>
       </div>
 
@@ -121,6 +128,31 @@
   <script>
     let generatedHtml = "";
 
+    // 複製程式碼功能
+    function copyCode() {
+      if (!generatedHtml) return;
+      
+      navigator.clipboard.writeText(generatedHtml).then(() => {
+        const btnText = document.getElementById('copyBtnText');
+        const copyBtn = document.getElementById('copyBtn');
+        
+        // 改變按鈕樣式與文字提示已複製
+        btnText.innerText = '已複製！';
+        copyBtn.classList.remove('text-gray-500');
+        copyBtn.classList.add('text-green-700', 'bg-green-50');
+        
+        // 2秒後恢復原狀
+        setTimeout(() => {
+          btnText.innerText = '複製 HTML';
+          copyBtn.classList.add('text-gray-500');
+          copyBtn.classList.remove('text-green-700', 'bg-green-50');
+        }, 2000);
+      }).catch(err => {
+        alert('複製失敗，您的瀏覽器可能不支援此功能。請手動框選複製。');
+        console.error('複製失敗:', err);
+      });
+    }
+
     function switchTab(tab) {
       document.getElementById('tab-code').className = tab === 'code' 
         ? 'px-6 py-3.5 text-sm font-bold text-green-700 border-b-2 border-green-700 flex items-center gap-2 bg-white' 
@@ -133,7 +165,12 @@
       document.getElementById('view-code').style.display = tab === 'code' && generatedHtml ? 'block' : 'none';
       document.getElementById('view-preview').style.display = tab === 'preview' && generatedHtml ? 'block' : 'none';
       
-      if(generatedHtml) document.getElementById('emptyState').style.display = 'none';
+      if(generatedHtml) {
+        document.getElementById('emptyState').style.display = 'none';
+        // 顯示複製按鈕
+        document.getElementById('copyBtn').classList.remove('hidden');
+        document.getElementById('copyBtn').classList.add('flex');
+      }
     }
 
     document.getElementById('generatorForm').addEventListener('submit', async (e) => {
